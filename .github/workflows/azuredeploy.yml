@@ -32,5 +32,6 @@ jobs:
             username: ${{ secrets.AZURE_ACR_USERNAME }}
             password: ${{ secrets.AZURE_ACR_PASSWORD }}
         - run: |
+            cd app
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
