@@ -127,7 +127,7 @@
                                 }
                             ],
                             "healthProbeSettings": {
-                                "id": "[concat(resourceId('Microsoft.Network/frontdoors', variables('name-frontdoor')), '/HealthProbeSettings/healthProbeSettings)]"
+                                "id": "[concat(resourceId('Microsoft.Network/frontdoors', variables('name-frontdoor')), '/HealthProbeSettings/healthProbeSettings')]"
                             },
                             "loadBalancingSettings": {
                                 "id": "[concat(resourceId('Microsoft.Network/frontdoors', variables('name-frontdoor')), '/LoadBalancingSettings/loadBalancingSettings')]"
