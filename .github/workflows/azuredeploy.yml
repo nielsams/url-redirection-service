@@ -20,9 +20,16 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v2
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
         
       - name: Docker Build
         run: |
           cd app
           docker build -t "url-redirection-service" .
+          docker push ${{ secrets.AZURE_ACR_REGISTRY }}.azurecr.io/${{ secrets.AZURE_ACR_REPOSITORY }}:${{ github.sha }}
