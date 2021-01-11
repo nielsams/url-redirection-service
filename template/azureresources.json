@@ -26,9 +26,9 @@
 
     },
     "variables": {
-        "name-frontdoor": "[concat(parameters('nameprefix'), '-fd')]",
-        "name-container": "[concat(parameters('nameprefix'), '-ci')]",
-        "name-storage": "[concat(parameters('nameprefix'), '-storage')]",
+        "name-frontdoor": "[concat(parameters('nameprefix'), 'fd')]",
+        "name-container": "[concat(parameters('nameprefix'), 'ci')]",
+        "name-storage": "[concat(parameters('nameprefix'), 'st')]",
         "name-urltable": "redirectionurls",
 
         "containerUri": "[concat(parameters('containerAcr'), '/', parameters('containerRepo'), ':', parameters('containerTag'))]",
@@ -117,12 +117,12 @@
                         "properties": {
                             "backends": [
                                 {
-                                    "address": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', variables('name-container'))).ipAddress.dnsNameLabel]",
+                                    "address": "[concat(reference(resourceId('Microsoft.ContainerInstance/containerGroups/', variables('name-container'))).ipAddress.dnsNameLabel, '.', variables('location'), '.azurecontainer.io')]",
                                     "httpPort": 8080,
                                     "httpsPort": 443,
                                     "priority": 1,
                                     "weight": 50,
-                                    "backendHostHeader": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', variables('name-container'))).ipAddress.dnsNameLabel]",
+                                    "backendHostHeader": "[concat(reference(resourceId('Microsoft.ContainerInstance/containerGroups/', variables('name-container'))).ipAddress.dnsNameLabel, '.', variables('location'), '.azurecontainer.io')]",
                                     "enabledState": "Enabled"
                                 }
                             ],

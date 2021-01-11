@@ -39,7 +39,7 @@ jobs:
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
 
-        - name: Enable Frontdoor Custom Domain
+        - name: Deploy Azure Resources
           uses: azure/powershell@v1
           with: 
             inlineScript: |
