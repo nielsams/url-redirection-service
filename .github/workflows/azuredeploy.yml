@@ -37,3 +37,55 @@ jobs:
             cd app
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
+
+        - name: Validate custom domain
+          shell: pwsh
+          run: |
+            $customDomain = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}"
+            $frontdoorName = "${{ secrets.AZUREDEPLOY_NAMEPREFIX }}-fd.azurefd.net"
+            $resourceGroup = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}"
+            $subscription = "${{ secrets.AZUREDEPLOY_SUBSCRIPTION }}"
+
+            $validateCustomDomain = Invoke-AzRestMethod -Method POST -Path "/subscriptions/$subscription/resourceGroups/$resourceGroup/providers/Microsoft.Network/frontDoors/$frontdoorName/validateCustomDomain?api-version=2019-05-01" -Payload '{"hostName": "$customDomain"}'
+            if (($validateCustomDomain.Content | ConvertFrom-Json | Select-Object -ExpandProperty customDomainValidated) -eq $false) 
+            { 
+                Write-Error $validateCustomDomain.Content 
+            }
+
+        - name: Deploy Azure Resources
+          uses: azure/arm-deploy@v1
+          with:
+            subscriptionId: ${{ secrets.AZUREDEPLOY_SUBSCRIPTION }}
+            resourceGroupName: ${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}
+            template: ./template/azureresources.json
+            parameters: |
+              customDomain=${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}
+              nameprefix=${{ secrets.AZUREDEPLOY_NAMEPREFIX }}
+              containerAcrUsername=${{ secrets.AZURE_ACR_USERNAME }}
+              containerAcrPassword=${{ secrets.AZURE_ACR_PASSWORD }}
+              containerAcr=${{ secrets.AZURE_ACR_REGISTRY }}
+              containerRep=${{ secrets.AZURE_ACR_REPOSITORY }}
+              containerTag=${{ github.sha }}
+
+        - name: Enable Frontdoor Custom Domain
+          shell: pwsh
+          run: |
+            $customDomainFriendlyName = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}" -replace '.', '-'
+            $frontdoorName = "${{ secrets.AZUREDEPLOY_NAMEPREFIX }}-fd.azurefd.net"
+            $resourceGroup = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}"
+            $httpsState = Get-AzFrontDoorFrontendEndpoint -ResourceGroupName $resourceGroup -FrontDoorName $frontDoorName -Name $customDomainFriendlyName | Select-Object -ExpandProperty "CustomHttpsProvisioningState"
+
+            If ($httpsState -eq "Disabled") 
+            {
+                Write-Host "Enabling Managed Certificate for custom domain"
+                Enable-AzFrontDoorCustomDomainHttps -ResourceGroupName $resourceGroup -FrontDoorName $frontDoorName -FrontendEndpointName $customDomainFriendlyName -MinimumTlsVersion 1.2
+                Write-Host "Validation is running. Check status in the portal or through script"
+            }  
+            Else
+            {
+                Write-Host "Https State for custom domain is $HttpsState"
+                If (-NOT $HttpsState -eq "Enabled")
+                {
+                    Write-Host "Managed Certificate validation pending. Check status in the portal or through script"
+                }
+            }
