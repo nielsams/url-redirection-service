@@ -31,5 +31,5 @@ jobs:
       - name: Docker Build
         run: |
           cd app
-          docker build -t "url-redirection-service" .
+          docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}.azurecr.io/${{ secrets.AZURE_ACR_REPOSITORY }}:${{ github.sha }}
           docker push ${{ secrets.AZURE_ACR_REGISTRY }}.azurecr.io/${{ secrets.AZURE_ACR_REPOSITORY }}:${{ github.sha }}
