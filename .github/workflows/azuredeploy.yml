@@ -39,22 +39,6 @@ jobs:
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
 
-        - name: Validate custom domain
-          uses: azure/powershell@v1
-          with: 
-            inlineScript: |
-              $customDomain = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}"
-              $frontdoorName = "${{ secrets.AZUREDEPLOY_NAMEPREFIX }}-fd.azurefd.net"
-              $resourceGroup = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}"
-              $subscription = "${{ secrets.AZUREDEPLOY_SUBSCRIPTION }}"
-
-              $validateCustomDomain = Invoke-AzRestMethod -Method POST -Path "/subscriptions/$subscription/resourceGroups/$resourceGroup/providers/Microsoft.Network/frontDoors/$frontdoorName/validateCustomDomain?api-version=2019-05-01" -Payload '{"hostName": "$customDomain"}'
-              if (($validateCustomDomain.Content | ConvertFrom-Json | Select-Object -ExpandProperty customDomainValidated) -eq $false) 
-              { 
-                  Write-Error $validateCustomDomain.Content 
-              }
-            azPSVersion: '3.1.0'
-
         - name: Deploy Azure Resources
           uses: azure/arm-deploy@v1
           with:
