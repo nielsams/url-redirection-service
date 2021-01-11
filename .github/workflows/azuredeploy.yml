@@ -49,7 +49,7 @@ jobs:
                 containerAcrUsername = "${{ secrets.AZURE_ACR_USERNAME }}";
                 containerAcrPassword = "${{ secrets.AZURE_ACR_PASSWORD }}";
                 containerAcr = "${{ secrets.AZURE_ACR_REGISTRY }}";
-                containerRepo = "${{ secrets.AZURE_ACR_REPOSITORY }}";
+                containerRepo = "redirector";
                 containerTag = "${{ github.sha }}";
               }
 
