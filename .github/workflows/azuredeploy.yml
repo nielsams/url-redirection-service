@@ -64,9 +64,9 @@ jobs:
           with: 
             inlineScript: |
               $customDomainFriendlyName = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}" -replace '.', '-'
-              $frontdoorName = "${{ secrets.AZUREDEPLOY_NAMEPREFIX }}-fd.azurefd.net"
+              $frontdoorName = "${{ secrets.AZUREDEPLOY_NAMEPREFIX }}fd"
               $resourceGroup = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}"
-              $httpsState = Get-AzFrontDoorFrontendEndpoint -ResourceGroupName $resourceGroup -FrontDoorName $frontDoorName -Name $customDomainFriendlyName | Select-Object -ExpandProperty "CustomHttpsProvisioningState"
+              $httpsState = Get-AzFrontDoorFrontendEndpoint -ResourceGroupName $resourceGroup -FrontDoorName $frontdoorName -Name $customDomainFriendlyName | Select-Object -ExpandProperty "CustomHttpsProvisioningState"
 
               If ($httpsState -eq "Disabled") 
               {
