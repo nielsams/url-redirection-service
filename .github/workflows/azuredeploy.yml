@@ -63,7 +63,7 @@ jobs:
           uses: azure/powershell@v1
           with: 
             inlineScript: |
-              $customDomainFriendlyName = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}" -replace '.', '-'
+              $customDomainFriendlyName = ("${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}").Replace('.', '-')
               $frontdoorName = "${{ secrets.AZUREDEPLOY_NAMEPREFIX }}fd"
               $resourceGroup = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}"
               $httpsState = Get-AzFrontDoorFrontendEndpoint -ResourceGroupName $resourceGroup -FrontDoorName $frontdoorName -Name $customDomainFriendlyName | Select-Object -ExpandProperty "CustomHttpsProvisioningState"
