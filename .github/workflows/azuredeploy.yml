@@ -39,20 +39,23 @@ jobs:
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
 
-        - name: Deploy Azure Resources
-          uses: azure/arm-deploy@v1
-          with:
-            subscriptionId: ${{ secrets.AZUREDEPLOY_SUBSCRIPTION }}
-            resourceGroupName: ${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}
-            template: ./template/azureresources.json
-            parameters: |
-              customDomain=${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}
-              nameprefix=${{ secrets.AZUREDEPLOY_NAMEPREFIX }}
-              containerAcrUsername=${{ secrets.AZURE_ACR_USERNAME }}
-              containerAcrPassword=${{ secrets.AZURE_ACR_PASSWORD }}
-              containerAcr=${{ secrets.AZURE_ACR_REGISTRY }}
-              containerRep=${{ secrets.AZURE_ACR_REPOSITORY }}
-              containerTag=${{ github.sha }}
+        - name: Enable Frontdoor Custom Domain
+          uses: azure/powershell@v1
+          with: 
+            inlineScript: |
+              $params = @{
+                customDomain = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}";
+                nameprefix = "${{ secrets.AZUREDEPLOY_NAMEPREFIX }}";
+                containerAcrUsername = "${{ secrets.AZURE_ACR_USERNAME }}";
+                containerAcrPassword = "${{ secrets.AZURE_ACR_PASSWORD }}";
+                containerAcr = "${{ secrets.AZURE_ACR_REGISTRY }}";
+                containerRepo = "${{ secrets.AZURE_ACR_REPOSITORY }}";
+                containerTag = "${{ github.sha }}";
+              }
+
+              $resourceGroup = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}"
+              New-AzResourceGroupDeployment -ResourceGroupName $resourceGroup -TemplateFile "template/azureresources.json" -TemplateParameterObject $params
+            azPSVersion: '3.1.0'
 
         - name: Enable Frontdoor Custom Domain
           uses: azure/powershell@v1
