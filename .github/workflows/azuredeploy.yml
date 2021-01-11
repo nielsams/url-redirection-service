@@ -25,13 +25,15 @@ jobs:
           with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
         
-        - name: 'Build and push image'
+        - name: 'Repository Login'
           uses: azure/docker-login@v1
           with:
             login-server: ${{ secrets.AZURE_ACR_REGISTRY }}
             username: ${{ secrets.AZURE_ACR_USERNAME }}
             password: ${{ secrets.AZURE_ACR_PASSWORD }}
-        - run: |
+          
+        - name: Build and Push Image
+          run: |
             cd app
-            docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
+            docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }} -t latest
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
