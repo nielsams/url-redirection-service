@@ -71,7 +71,7 @@ jobs:
               If ($httpsState -eq "Disabled") 
               {
                   Write-Host "Enabling Managed Certificate for custom domain"
-                  Enable-AzFrontDoorCustomDomainHttps -ResourceGroupName $resourceGroup -FrontDoorName $frontdoorName -FrontendEndpointName $customDomainFriendlyName -MinimumTlsVersion 1.2
+                  $res = Enable-AzFrontDoorCustomDomainHttps -ResourceGroupName $resourceGroup -FrontDoorName $frontdoorName -FrontendEndpointName $customDomainFriendlyName -MinimumTlsVersion 1.2
                   Write-Host "Validation is running. Check status in the portal or through script"
               }  
               Else
