@@ -35,5 +35,5 @@ jobs:
         - name: Build and Push Image
           run: |
             cd app
-            docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }} -t latest
+            docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
