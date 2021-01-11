@@ -13,28 +13,24 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@main
-
-      - name: 'Login via Azure CLI'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
+        # checkout the repo
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@main
+          
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
         
-      - name: Docker Build and Push
-        uses: azure/docker-login@v1
-        with:
-            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}.azurecr.io
+        - name: 'Build and push image'
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ secrets.AZURE_ACR_REGISTRY }}
             username: ${{ secrets.AZURE_ACR_USERNAME }}
             password: ${{ secrets.AZURE_ACR_PASSWORD }}
-      - run: |
-          cd app
-          docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}.azurecr.io/${{ secrets.AZURE_ACR_REPOSITORY }}:${{ github.sha }}
-          docker push ${{ secrets.AZURE_ACR_REGISTRY }}.azurecr.io/${{ secrets.AZURE_ACR_REPOSITORY }}:${{ github.sha }}
+        - run: |
+            docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
+            docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
