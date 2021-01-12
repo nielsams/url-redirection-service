@@ -64,7 +64,7 @@ For the custom domain you want to use, set a CNAME record pointing to the Azure 
 This step must be completed before the Frontdoor resource can be deplyed. 
 
 ### Step 5: Trigger the workflow. 
-From the 'Actions' menu, start the <i>AzureDeploy</i> workflow.
+From the 'Actions' menu, start the <i>AzureDeploy</i> workflow. You may need to indicate that you trust the workflows before you can run them.
 
 ### Step 6: Add URLs
 In the <i>redirectionurls</i> table add a new record. Set partitionkey and rowkey to the short url you want and add a column <i>redirecturl</i> with the full URL value. For example, to redirect go.mydomain.com/pizza to www.myfavoritepizza.com, enter:
