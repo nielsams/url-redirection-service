@@ -1,4 +1,4 @@
-# URL Redirection Service
+# URL Redirection Service on Azure
 
 This is a simple proof of concept app that redirects short URLs to long URLs. As an example, [go.nielsb.net/url-redirect](https://go.nielsb.net/url-redirect) points to this page.
 
