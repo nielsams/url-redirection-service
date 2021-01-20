@@ -28,7 +28,7 @@ There will need to be a storage account with a URL table in place for this to wo
 ### Step 1: Fork the repository
 
 ### Step 2: Set up access to an Azure subscription
-Create a new resource group:
+Create a new Azure resource group:
 ```
 az group create --name myredirector --location westeurope
 ```
