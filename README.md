@@ -2,8 +2,6 @@
 
 This is a simple proof of concept app that redirects short URLs to long URLs. As an example, [go.nielsb.net/url-redirect](https://go.nielsb.net/url-redirect) points to this page.
 
-The main reason I built this was to try out some technology I was unfamiliar with. By doing this, I got to write some more Go code, tried out a multi-stage docker build and set up a full deployment from a Github workflow. 
-
 It works by having a lightweight app that processes incoming requests, takes the URL path and matches it against an Azure Table Storage table to get the redirect URL and sends an HTTP 302 header back to the requestor. 
 
 The infrastructure consists of an Azure Container behind Azure Frontdoor (for managed SSL certificate and HTTP->HTTPS redirection) and is deployed through an ARM template. The build and deploy process is orchestrated by a Github workflow and is completely portable by changing the values of the Github Secrets involved. 
