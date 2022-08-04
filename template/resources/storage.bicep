@@ -5,7 +5,7 @@ param nameprefix string
 param location string = resourceGroup().location
 
 resource storageappdata 'Microsoft.Storage/storageAccounts@2021-08-01' = {
-  name: '${nameprefix}redirectstor'
+  name: '${nameprefix}stor'
   location: location
   sku: {
     name: 'Standard_LRS'
@@ -17,7 +17,7 @@ resource storageappdata 'Microsoft.Storage/storageAccounts@2021-08-01' = {
 }
 
 resource symbolicname 'Microsoft.Storage/storageAccounts/tableServices/tables@2021-09-01' = {
-  name: '${nameprefix}redirectstor/redirectionurls'
+  name: '${nameprefix}redirectstor/default/redirectionurls'
 }
 
 output storageAccountName string = storageappdata.name
