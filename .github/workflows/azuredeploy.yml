@@ -53,8 +53,8 @@ jobs:
             inlineScript: |
               $params = @{
                 customDomain = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}";
-                name = ${{env.DEPLOYMENT_NAME}};
-                containerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}"
+                name = "${{env.DEPLOYMENT_NAME}}";
+                containerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}";
                 acrServer = "${{ secrets.AZURE_ACR_REGISTRY }}";
                 acrUser = "${{ secrets.AZURE_ACR_USERNAME }}";
                 acrPassword = "${{ secrets.AZURE_ACR_PASSWORD }}";

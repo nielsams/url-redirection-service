@@ -4,6 +4,7 @@ param nameprefix string
 @description('The base URL of the container, without https://')
 param containerUrl string
 
+param customDomainName string
 
 resource frontdoor 'Microsoft.Cdn/profiles@2021-06-01' = {
   name: '${nameprefix}afd'
@@ -16,12 +17,22 @@ resource frontdoor 'Microsoft.Cdn/profiles@2021-06-01' = {
   }
 }
 
+
+
 resource afdendpoint 'Microsoft.Cdn/profiles/afdendpoints@2021-06-01' = {
   parent: frontdoor
-  name: nameprefix
+  name: '${nameprefix}fd'
   location: 'Global'
   properties: {
     enabledState: 'Enabled'
+    
+  }
+}
+
+resource customDomain 'Microsoft.Cdn/profiles/customDomains@2021-06-01' = {
+  name: '${nameprefix}fd/customdomain'
+  properties: {
+    hostName: customDomainName
   }
 }
 
@@ -57,10 +68,14 @@ resource afdroute_api 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = 
   parent: afdendpoint
   name: 'route-api'
   properties: {
-    customDomains: []
     originGroup: {
       id: afdorigingroup_api.id
     }
+    customDomains: [
+      {
+        id: customDomain.id
+      }
+    ]
     ruleSets: []
     supportedProtocols: [
       'Https'
