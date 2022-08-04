@@ -61,7 +61,7 @@ jobs:
               }
 
               $resourceGroup = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}"
-              $res = New-AzSubscriptionDeployment -Name ${{env.DEPLOYMENT_NAME}} -TemplateFile "template/main.bicep" -TemplateParameterObject $params -Location ${{env.DEPLOYMENT_REGION}}
+              $res = New-AzDeployment -Name ${{env.DEPLOYMENT_NAME}} -TemplateFile "template/main.bicep" -TemplateParameterObject $params -Location ${{env.DEPLOYMENT_REGION}}
               $res.ProvisioningState
 
             azPSVersion: '3.1.0'
