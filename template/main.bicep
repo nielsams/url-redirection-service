@@ -50,7 +50,7 @@ module frontdoor './resources/frontdoor.bicep' = {
   scope: rg
   params: {
     nameprefix: toLower(name)
-    customDomain: customDomain
+    customDomainName: customDomain
     containerUrl: container.outputs.containerIPAddress
   }
   dependsOn: [
