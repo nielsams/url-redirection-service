@@ -58,10 +58,9 @@ jobs:
                 acrServer = "${{ secrets.AZURE_ACR_REGISTRY }}";
                 acrUser = "${{ secrets.AZURE_ACR_USERNAME }}";
                 acrPassword = "${{ secrets.AZURE_ACR_PASSWORD }}";
+                resourceGroupName = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}";
               }
 
-              $resourceGroup = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}"
-              $res = New-AzDeployment -Name "${{env.DEPLOYMENT_NAME}}" -TemplateFile "template/main.bicep" -TemplateParameterObject $params -Location ${{env.DEPLOYMENT_REGION}}
-              $res.ProvisioningState
+              New-AzDeployment -Name "${{env.DEPLOYMENT_NAME}}" -TemplateFile "template/main.bicep" -TemplateParameterObject $params -Location ${{env.DEPLOYMENT_REGION}}
 
-            azPSVersion: '3.1.0'
+            azPSVersion: 'latest'

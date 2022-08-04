@@ -30,7 +30,8 @@ resource afdendpoint 'Microsoft.Cdn/profiles/afdendpoints@2021-06-01' = {
 }
 
 resource customDomain 'Microsoft.Cdn/profiles/customDomains@2021-06-01' = {
-  name: '${nameprefix}fd/customdomain'
+  parent: frontdoor
+  name: 'customdomain'
   properties: {
     hostName: customDomainName
   }
@@ -83,7 +84,7 @@ resource afdroute_api 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = 
     patternsToMatch: [
       '/*'
     ]
-    forwardingProtocol: 'Http'
+    forwardingProtocol: 'HttpOnly'
     linkToDefaultDomain: 'Enabled'
     httpsRedirect: 'Enabled'
     enabledState: 'Enabled'
