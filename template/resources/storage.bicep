@@ -17,7 +17,7 @@ resource storageappdata 'Microsoft.Storage/storageAccounts@2021-08-01' = {
 }
 
 resource symbolicname 'Microsoft.Storage/storageAccounts/tableServices/tables@2021-09-01' = {
-  name: '${nameprefix}redirectstor/default/redirectionurls'
+  name: '${nameprefix}stor/default/redirectionurls'
 }
 
 output storageAccountName string = storageappdata.name
