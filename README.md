@@ -47,24 +47,16 @@ Add the following Github secrets to your fork:
 | --------------------------- | ----- |
 | AZURE_CREDENTIALS           | The json body from the command above |
 | AZUREDEPLOY_CUSTOM_DOMAIN   | The custom domain for your service, e.g. go.yourdomain.com
-| AZUREDEPLOY_NAMEPREFIX      | Unique name prefix for your Azure resources, e.g. myredirabc
 | AZUREDEPLOY_RESOURCEGROUP   | The name of the resource group created earlier
-| AZUREDEPLOY_SUBSCRIPTION    | ID of the subscription that holds the resource group
 | AZURE_ACR_PASSWORD          | Service Principal password for ACR access (e.g. secret from the json credential body ealier)
 | AZURE_ACR_REGISTRY          | Name of the ACR, e.g. myacr.azurecr.io
 | AZURE_ACR_USERNAME          | Service Principal username for ACR access (e.g. clientid from the json credential body ealier)
 
-### Step 4: Set a CNAME record on your domain
-For the custom domain you want to use, set a CNAME record pointing to the Azure Frontdoor instance. This will be [nameprefix]fd.azurefd.net
-
-| Record | Value |
-| ------ | ----- |
-| go     | myredirfd.azurefd.net |
-
-This step must be completed before the Frontdoor resource can be deplyed. 
-
-### Step 5: Trigger the workflow. 
+### Step 4: Trigger the workflow. 
 From the 'Actions' menu, start the <i>AzureDeploy</i> workflow. You may need to indicate that you trust the workflows before you can run them.
+
+### Step 5: Validate custom domain
+Go to the Azure portal and look up the Azure Front Door resource. Under the custom domain section, follow the instructions for validating the domain.
 
 ### Step 6: Add URLs
 In the <i>redirectionurls</i> table add a new record. Set partitionkey and rowkey to the short url you want and add a column <i>redirecturl</i> with the full URL value. For example, to redirect go.mydomain.com/pizza to www.myfavoritepizza.com, enter:
