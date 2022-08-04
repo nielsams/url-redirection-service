@@ -7,8 +7,15 @@ param acrUser string
 @secure()
 param acrPassword string
 
+
+// This account has been deployed by another sub deployment
+resource datastorage 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
+  name: storageAccountName
+}
+
+
 resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01' = {
-  name: '${nameprefix}redircontainer'
+  name: '${nameprefix}container'
   location: location
   properties: {
     containers: [
@@ -23,7 +30,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
             }
             {
               'name': 'STORAGE_CONNECTION_STRING'
-              'value': 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccountName, '2021-08-01').keys[0].value}'
+              'value': 'DefaultEndpointsProtocol=https;AccountName=${datastorage.name};AccountKey=${datastorage.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
             }
 
           ]
@@ -35,8 +42,8 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
           ]
           resources: {
             requests: {
-              cpu: '1'
-              memoryInGB: '1.5'
+              cpu: 1
+              memoryInGB: 2
             }
           }
         }

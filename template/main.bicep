@@ -36,6 +36,9 @@ module container './resources/container.bicep' = {
     acrPassword: acrPassword
     storageAccountName: storage.outputs.storageAccountName
   }
+  dependsOn: [
+    storage
+  ]
 }
 
 module frontdoor './resources/frontdoor.bicep' = {
