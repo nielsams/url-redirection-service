@@ -1,16 +1,9 @@
 targetScope = 'subscription'
 
-@minLength(1)
-@maxLength(16)
-@description('Prefix for all resources, i.e. {name}storage')
 param name string
-
-@minLength(1)
-@description('Primary location for all resources')
+param resourceGroupName string
 param location string = deployment().location
-
 param customDomain string
-
 param containerImage string
 param acrServer string
 param acrUser string
@@ -18,7 +11,7 @@ param acrUser string
 param acrPassword string
 
 resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
-  name: 'nielsb-redirector'
+  name: resourceGroupName
   location: location
 }
 
