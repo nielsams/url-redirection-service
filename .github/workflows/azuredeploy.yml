@@ -65,28 +65,3 @@ jobs:
               $res.ProvisioningState
 
             azPSVersion: '3.1.0'
-
-        - name: Enable Frontdoor Custom Domain
-          uses: azure/powershell@v1
-          with: 
-            inlineScript: |
-              $customDomainFriendlyName = ("${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}").Replace('.', '-')
-              $frontdoorName = "${{ secrets.AZUREDEPLOY_NAMEPREFIX }}fd"
-              $resourceGroup = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}"
-              $httpsState = Get-AzFrontDoorFrontendEndpoint -ResourceGroupName $resourceGroup -FrontDoorName $frontdoorName -Name $customDomainFriendlyName | Select-Object -ExpandProperty "CustomHttpsProvisioningState"
-
-              If ($httpsState -eq "Disabled") 
-              {
-                  Write-Host "Enabling Managed Certificate for custom domain"
-                  $res = Enable-AzFrontDoorCustomDomainHttps -ResourceGroupName $resourceGroup -FrontDoorName $frontdoorName -FrontendEndpointName $customDomainFriendlyName -MinimumTlsVersion 1.2
-                  Write-Host "Validation is running. Check status in the portal or through script"
-              }  
-              Else
-              {
-                  Write-Host "Https State for custom domain is $HttpsState"
-                  If (-NOT $HttpsState -eq "Enabled")
-                  {
-                      Write-Host "Managed Certificate validation pending. Check status in the portal or through script"
-                  }
-              }
-            azPSVersion: '3.1.0'
