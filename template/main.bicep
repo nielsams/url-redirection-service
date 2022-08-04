@@ -16,7 +16,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
 }
 
 module storage './resources/storage.bicep' = {
-  name: '${rg.name}-storage'
+  name: '${name}-storage'
   scope: rg
   params: {
     nameprefix: toLower(name)
@@ -25,7 +25,7 @@ module storage './resources/storage.bicep' = {
 }
 
 module container './resources/container.bicep' = {
-  name: '${rg.name}-container'
+  name: '${name}-container'
   scope: rg
   params: {
     nameprefix: toLower(name)
@@ -39,7 +39,7 @@ module container './resources/container.bicep' = {
 }
 
 module frontdoor './resources/frontdoor.bicep' = {
-  name: '${rg.name}-frontdoor'
+  name: '${name}-frontdoor'
   scope: rg
   params: {
     nameprefix: toLower(name)

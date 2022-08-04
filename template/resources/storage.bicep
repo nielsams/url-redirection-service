@@ -4,7 +4,7 @@ param nameprefix string
 @description('Azure region for resources')
 param location string = resourceGroup().location
 
-resource storageappdata 'Microsoft.Storage/storageAccounts@2021-08-01' = {
+resource storagedata 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   name: '${nameprefix}stor'
   location: location
   sku: {
@@ -20,4 +20,4 @@ resource symbolicname 'Microsoft.Storage/storageAccounts/tableServices/tables@20
   name: '${nameprefix}stor/default/redirectionurls'
 }
 
-output storageAccountName string = storageappdata.name
+output storageAccountName string = storagedata.name
