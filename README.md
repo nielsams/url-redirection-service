@@ -26,17 +26,12 @@ There will need to be a storage account with a URL table in place for this to wo
 ### Step 1: Fork the repository
 
 ### Step 2: Set up access to an Azure subscription
-Create a new Azure resource group:
-```
-az group create --name myredirector --location westeurope
-```
 Create a service principal and assign access:
 ```
 # Update values in the cli command below to create a service principal and assign permissions on the resource group and the ACR:
 
 az ad sp create-for-rbac --name "app-myredirector" --sdk-auth --role contributor --scopes \
-/subscriptions/[SUBSCRIPTION ID]/resourceGroups/myredirector \
-/subscriptions/[SUBSCRIPTION ID]/resourceGroups/[ACR RESOURCE GROUP]/providers/Microsoft.ContainerRegistry/registries/[ACR NAME]
+/subscriptions/[SUBSCRIPTION ID] 
 ```
 Copy the entire json body from the output into a Github secret called AZURE_CREDENTIALS.
 
