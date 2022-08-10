@@ -80,6 +80,7 @@ resource afdroute_api 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = 
     ruleSets: []
     supportedProtocols: [
       'Https'
+      'Http'
     ]
     patternsToMatch: [
       '/*'
