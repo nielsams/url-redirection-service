@@ -89,5 +89,5 @@ func getRedirectURL(urlKey string) string {
 	// Return the redirecturl property of the first entity.
 	// In the strange case there are multiple results, we ignore all but the first.
 	returnEntity := result.Entities[0]
-	return returnEntity.Properties["redirecturl"].(string)
+	return returnEntity.Properties["RedirectUrl"].(string)
 }
