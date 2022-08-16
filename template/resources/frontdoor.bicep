@@ -139,6 +139,7 @@ resource afdroute_admin 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' 
     ]
     patternsToMatch: [
       '/admin'
+      '/admin/*'
     ]
     forwardingProtocol: 'HttpOnly'
     linkToDefaultDomain: 'Enabled'
