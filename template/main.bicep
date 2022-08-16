@@ -47,6 +47,7 @@ module container './resources/container.bicep' = {
     acrUser: acrUser
     acrPassword: acrPassword
     storageAccountName: storage.outputs.storageAccountName
+    customDomain: customDomain
   }
   dependsOn: [
     storage
