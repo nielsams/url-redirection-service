@@ -1,0 +1,43 @@
+﻿@page "/"
+@attribute [Authorize(Roles = "Redirect.Admin")]
+@using RedirectAdmin.Data
+@using RedirectAdmin.Models
+@inject RedirectDataTable RedirectDataService
+
+<h1>Redirect Links</h1>
+
+@if (urls == null)
+{
+    <p><em>@LoadMessage</em></p>
+}
+else
+{
+    <div class="urlListContainer">
+    @foreach (var url in urls)
+    {
+        <div class="urlListItem">
+            <span class="urlListTitle"><a href="/detail/@url.RowKey">@url.RowKey</a></span>
+            <span class="urlListUrl">@(url.RedirectUrl.Substring(0,Math.Min(url.RedirectUrl.Length,50)))</span>
+        </div>
+    }
+</div>
+}
+
+@code {
+    private List<RedirectURL> urls;
+    private string LoadMessage = "Loading...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        TableResponse<List<RedirectURL>> resp = await RedirectDataService.GetAllUrls();
+        if(resp.Success)
+        {
+            urls = resp.Value;
+        }
+        else
+        {
+            LoadMessage = "Failed to load data: " + resp.Message;
+        }
+
+    }
+}

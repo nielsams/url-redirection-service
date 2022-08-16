@@ -1,0 +1,62 @@
+﻿@page "/new"
+@attribute [Authorize(Roles = "Redirect.Admin")]
+@using RedirectAdmin.Data
+@using RedirectAdmin.Models
+@using Microsoft.Extensions.Logging
+@inject RedirectDataTable RedirectDataService
+@inject ILogger<NewUrl> Logger
+
+<h1>New Redirection URL</h1>
+@if (LastSubmitResult != null)
+{
+  <p>@LastSubmitResult</p>
+}
+
+<EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit">
+    <div class="form-group">
+        <label for="ShortName">Short Name</label>
+        <InputText @bind-Value=url.RowKey class="form-control" id="ShortName" />
+    </div>
+    <div class="form-group">
+        <label for="url">Redirect URL</label>
+        <InputText @bind-Value=url.RedirectUrl class="form-control" id="url" />
+    </div>
+    <input type="submit" class="btn btn-primary" value="Save" />
+</EditForm>
+
+@code {
+    RedirectURL url = new RedirectURL();
+    private EditContext editContext;
+    private string LastSubmitResult;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(url);
+    }
+
+    async void HandleValidSubmit(EditContext editContext)
+    {
+        Logger.LogInformation("Processing valid form");
+
+        var existingUrl = await RedirectDataService.GetUrlDetails(url.RowKey);
+        if(existingUrl != null)
+        {
+            LastSubmitResult = "URL Short Name already exists - Pick another one";
+            StateHasChanged();
+            return;
+        }
+
+        TableResponse response = await RedirectDataService.SaveUrl(url);
+        if(response.Success)
+        {
+            LastSubmitResult = "New Redirect URL created successfully.";
+            url = new RedirectURL();
+            StateHasChanged();
+        }
+        else
+        {
+            LastSubmitResult = "Error saving Redirect URL: " + response.Message;
+        }        
+    }
+}
+   
