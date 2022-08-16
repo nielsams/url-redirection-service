@@ -28,10 +28,11 @@ namespace RedirectAdmin
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            // We need to add this to make sure the redirectURI is built with the ForwardedHeaders from Front Door
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                    ForwardedHeaders.XForwardedFor;
             });
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
