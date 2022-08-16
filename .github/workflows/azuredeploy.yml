@@ -60,7 +60,8 @@ jobs:
               $params = @{
                 customDomain = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}";
                 name = "${{env.DEPLOYMENT_NAME}}";
-                containerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}";
+                redirectorContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}";
+                adminContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}";
                 acrServer = "${{ secrets.AZURE_ACR_REGISTRY }}";
                 acrUser = "${{ secrets.AZURE_ACR_USERNAME }}";
                 acrPassword = "${{ secrets.AZURE_ACR_PASSWORD }}";

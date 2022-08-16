@@ -36,12 +36,12 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
           image: redirectorimage
           environmentVariables: [
             {
-              'name': 'STORAGE_TABLE_NAME'
-              'value': tableName
+              name: 'STORAGE_TABLE_NAME'
+              value: tableName
             }
             {
-              'name': 'STORAGE_CONNECTION_STRING'
-              'value': storageConnectionString
+              name: 'STORAGE_CONNECTION_STRING'
+              value: storageConnectionString
             }
 
           ]
@@ -65,30 +65,30 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
           image: adminimage
           environmentVariables: [
             {
-              'name': 'RedirectTable:TableName'
-              'value': tableName
+              name: 'RedirectTable:TableName'
+              value: tableName
             }
             {
-              'name': 'RedirectTable:ConnectionString'
-              'value': storageConnectionString
+              name: 'RedirectTable:ConnectionString'
+              value: storageConnectionString
             }
             {
-              'name': 'AzureAd:Domain'
-              'value': adminDomain
+              name: 'AzureAd:Domain'
+              value: adminDomain
             }
             {
-              'name': 'AzureAd:TenantId'
-              'value': adminTenantId
+              name: 'AzureAd:TenantId'
+              value: adminTenantId
             }
             {
-              'name': 'AzureAd:ClientId'
-              'value': adminClientId
+              name: 'AzureAd:ClientId'
+              value: adminClientId
             }
             
           ]
           ports: [
             {
-              port: 8088
+              port: 80
               protocol: 'TCP'
             }
           ]
@@ -118,7 +118,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
           protocol: 'TCP'
         }
         {
-          port: 8088
+          port: 80
           protocol: 'TCP'
         }
       ]
