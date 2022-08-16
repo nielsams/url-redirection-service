@@ -65,23 +65,23 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
           image: adminimage
           environmentVariables: [
             {
-              name: 'RedirectTable:TableName'
+              name: 'RedirectTable__TableName'
               value: tableName
             }
             {
-              name: 'RedirectTable:ConnectionString'
+              name: 'RedirectTable__ConnectionString'
               value: storageConnectionString
             }
             {
-              name: 'AzureAd:Domain'
+              name: 'AzureAd__Domain'
               value: adminDomain
             }
             {
-              name: 'AzureAd:TenantId'
+              name: 'AzureAd__TenantId'
               value: adminTenantId
             }
             {
-              name: 'AzureAd:ClientId'
+              name: 'AzureAd__ClientId'
               value: adminClientId
             }
             
