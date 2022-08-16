@@ -112,7 +112,7 @@ resource afdorigin_admin 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01
     hostName: containerUrl
     httpPort: 80
     httpsPort: 443
-    originHostHeader: containerUrl
+    originHostHeader: customDomainName
     priority: 1
     weight: 1000
     enabledState: 'Enabled'
