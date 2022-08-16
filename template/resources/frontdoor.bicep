@@ -110,7 +110,7 @@ resource afdorigin_admin 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01
   name: 'origin-admin'
   properties: {
     hostName: containerUrl
-    httpPort: 8088
+    httpPort: 80
     httpsPort: 443
     originHostHeader: containerUrl
     priority: 1
