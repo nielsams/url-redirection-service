@@ -12,14 +12,18 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
 
 namespace RedirectAdmin
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private ILogger _logger;
+
+        public Startup(IConfiguration configuration, ILogger logger)
         {
             Configuration = configuration;
+            _logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -32,11 +36,15 @@ namespace RedirectAdmin
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor;
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
             });
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
               .AddMicrosoftIdentityWebApp(Configuration);
+
+            
 
 
             services.AddControllersWithViews(options =>
@@ -72,6 +80,27 @@ namespace RedirectAdmin
             }
 
             app.UseForwardedHeaders();
+
+            app.Use(async (context, next) =>
+            {
+                // Request method, scheme, and path
+                _logger.LogDebug("Request Method: {Method}", context.Request.Method);
+                _logger.LogDebug("Request Scheme: {Scheme}", context.Request.Scheme);
+                _logger.LogDebug("Request Path: {Path}", context.Request.Path);
+
+                // Headers
+                foreach (var header in context.Request.Headers)
+                {
+                    _logger.LogDebug("Header: {Key}: {Value}", header.Key, header.Value);
+                }
+
+                // Connection: RemoteIp
+                _logger.LogDebug("Request RemoteIp: {RemoteIpAddress}",
+                    context.Connection.RemoteIpAddress);
+
+                await next();
+            });
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
