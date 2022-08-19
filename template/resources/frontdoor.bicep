@@ -5,6 +5,7 @@ param nameprefix string
 param containerUrl string
 
 param customDomainName string
+var adminCustomDomainName = 'admin.${customDomainName}'
 
 resource frontdoor 'Microsoft.Cdn/profiles@2021-06-01' = {
   name: '${nameprefix}afd'
@@ -34,6 +35,14 @@ resource customDomain 'Microsoft.Cdn/profiles/customDomains@2021-06-01' = {
   name: 'customdomain'
   properties: {
     hostName: customDomainName
+  }
+}
+
+resource adminCustomDomain 'Microsoft.Cdn/profiles/customDomains@2021-06-01' = {
+  parent: frontdoor
+  name: 'admincustomdomain'
+  properties: {
+    hostName: adminCustomDomainName
   }
 }
 
@@ -129,7 +138,7 @@ resource afdroute_admin 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' 
     }
     customDomains: [
       {
-        id: customDomain.id
+        id: adminCustomDomain.id
       }
     ]
     ruleSets: []
@@ -138,8 +147,8 @@ resource afdroute_admin 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' 
       'Http'
     ]
     patternsToMatch: [
-      '/admin'
-      '/admin/*'
+      '/'
+      '/*'
     ]
     forwardingProtocol: 'HttpOnly'
     linkToDefaultDomain: 'Enabled'
