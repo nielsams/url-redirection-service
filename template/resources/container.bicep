@@ -22,8 +22,6 @@ resource datastorage 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
 
 var tableName = 'redirectionurls'
 var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${datastorage.name};AccountKey=${datastorage.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
-//var azureAdRedirectUri = 'https://${customDomain}/admin/signin-oidc'
-var azureAdCallbackPath = '/admin/signin-oidc'
 
 
 resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01' = {
@@ -84,10 +82,6 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
             {
               name: 'AzureAd__ClientId'
               value: adminClientId
-            }
-            {
-              name: 'AzureAd__CallbackPath'
-              value: azureAdCallbackPath
             }
             
           ]
