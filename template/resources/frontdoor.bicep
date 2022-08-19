@@ -4,8 +4,8 @@ param nameprefix string
 @description('The base URL of the container, without https://')
 param containerUrl string
 
-param customDomainName string
-var adminCustomDomainName = 'admin.${customDomainName}'
+param redirCustomDomainName string
+param adminCustomDomainName string
 
 resource frontdoor 'Microsoft.Cdn/profiles@2021-06-01' = {
   name: '${nameprefix}afd'
@@ -34,7 +34,7 @@ resource customDomain 'Microsoft.Cdn/profiles/customDomains@2021-06-01' = {
   parent: frontdoor
   name: 'customdomain'
   properties: {
-    hostName: customDomainName
+    hostName: redirCustomDomainName
   }
 }
 

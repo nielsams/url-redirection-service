@@ -4,6 +4,7 @@ param name string
 param resourceGroupName string
 param location string = deployment().location
 param customDomain string
+param adminDomain string
 param redirectorContainerImage string
 param adminContainerImage string
 param acrServer string
@@ -11,7 +12,7 @@ param acrUser string
 @secure()
 param acrPassword string
 @secure()
-param adminDomain string
+param adminAuthDomain string
 @secure()
 param adminTenantId string
 @secure()
@@ -41,7 +42,7 @@ module container './resources/container.bicep' = {
     redirectorimage: redirectorContainerImage
     adminimage: adminContainerImage
     adminClientId: adminClientId
-    adminDomain: adminDomain
+    adminAuthDomain: adminAuthDomain
     adminTenantId: adminTenantId
     acrServer: acrServer
     acrUser: acrUser
@@ -58,7 +59,8 @@ module frontdoor './resources/frontdoor.bicep' = {
   scope: rg
   params: {
     nameprefix: toLower(name)
-    customDomainName: customDomain
+    redirCustomDomainName: customDomain
+    adminCustomDomainName: adminDomain
     containerUrl: container.outputs.containerIPAddress
   }
   dependsOn: [

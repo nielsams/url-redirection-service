@@ -59,6 +59,7 @@ jobs:
             inlineScript: |
               $params = @{
                 customDomain = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}";
+                adminDomain = "${{ secrets.AZUREDEPLOY_ADMIN_DOMAIN }}";
                 name = "${{env.DEPLOYMENT_NAME}}";
                 redirectorContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}";
                 adminContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}";
@@ -68,7 +69,7 @@ jobs:
                 resourceGroupName = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}";
                 adminClientId = "${{ secrets.AZUREDEPLOY_ADMIN_CLIENTID }}";
                 adminTenantId = "${{ secrets.AZUREDEPLOY_ADMIN_TENANTID }}";
-                adminDomain = "${{ secrets.AZUREDEPLOY_ADMIN_AUTHDOMAIN }}";
+                adminAuthDomain = "${{ secrets.AZUREDEPLOY_ADMIN_AUTHDOMAIN }}";
               }
 
               New-AzDeployment -Name "${{env.DEPLOYMENT_NAME}}" -TemplateFile "template/main.bicep" -TemplateParameterObject $params -Location ${{env.DEPLOYMENT_REGION}}

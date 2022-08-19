@@ -13,7 +13,7 @@ param adminTenantId string
 @secure()
 param adminClientId string
 @secure()
-param adminDomain string
+param adminAuthDomain string
 
 // This account has been deployed by another sub deployment
 resource datastorage 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
@@ -75,7 +75,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
             }
             {
               name: 'AzureAd__Domain'
-              value: adminDomain
+              value: adminAuthDomain
             }
             {
               name: 'AzureAd__TenantId'
