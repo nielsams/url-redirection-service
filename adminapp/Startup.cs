@@ -18,12 +18,11 @@ namespace RedirectAdmin
 {
     public class Startup
     {
-        private ILogger _logger;
+        ILogger<Startup> _logger;
 
-        public Startup(IConfiguration configuration, ILogger logger)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -43,9 +42,6 @@ namespace RedirectAdmin
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
               .AddMicrosoftIdentityWebApp(Configuration);
-
-            
-
 
             services.AddControllersWithViews(options =>
             {
@@ -80,7 +76,7 @@ namespace RedirectAdmin
             }
 
             app.UseForwardedHeaders();
-
+/*
             app.Use(async (context, next) =>
             {
                 // Request method, scheme, and path
@@ -99,11 +95,9 @@ namespace RedirectAdmin
                     context.Connection.RemoteIpAddress);
 
                 await next();
-            });
+            });*/
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
             app.UseAuthentication();
