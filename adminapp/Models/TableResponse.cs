@@ -1,6 +1,4 @@
-﻿using System.Security.Policy;
-
-namespace RedirectAdmin.Models
+﻿namespace RedirectAdmin.Models
 {
     public class TableResponse
     {
