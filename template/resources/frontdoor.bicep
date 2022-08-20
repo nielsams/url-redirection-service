@@ -4,7 +4,8 @@ param nameprefix string
 @description('The base URL of the container, without https://')
 param containerUrl string
 
-param customDomainName string
+param redirCustomDomainName string
+param adminCustomDomainName string
 
 resource frontdoor 'Microsoft.Cdn/profiles@2021-06-01' = {
   name: '${nameprefix}afd'
@@ -33,13 +34,21 @@ resource customDomain 'Microsoft.Cdn/profiles/customDomains@2021-06-01' = {
   parent: frontdoor
   name: 'customdomain'
   properties: {
-    hostName: customDomainName
+    hostName: redirCustomDomainName
   }
 }
 
-resource afdorigingroup_api 'Microsoft.Cdn/profiles/origingroups@2021-06-01' = {
+resource adminCustomDomain 'Microsoft.Cdn/profiles/customDomains@2021-06-01' = {
   parent: frontdoor
-  name: 'origingroup-api'
+  name: 'admincustomdomain'
+  properties: {
+    hostName: adminCustomDomainName
+  }
+}
+
+resource afdorigingroup_redir 'Microsoft.Cdn/profiles/origingroups@2021-06-01' = {
+  parent: frontdoor
+  name: 'origingroup-redir'
   properties: {
     loadBalancingSettings: {
       sampleSize: 4
@@ -50,9 +59,9 @@ resource afdorigingroup_api 'Microsoft.Cdn/profiles/origingroups@2021-06-01' = {
   }
 }
 
-resource afdorigin_api 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01' = {
-  parent: afdorigingroup_api
-  name: 'origin-api'
+resource afdorigin_redir 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01' = {
+  parent: afdorigingroup_redir
+  name: 'origin-redir'
   properties: {
     hostName: containerUrl
     httpPort: 8080
@@ -67,10 +76,10 @@ resource afdorigin_api 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01' 
 
 resource afdroute_api 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = {
   parent: afdendpoint
-  name: 'route-api'
+  name: 'route-redir'
   properties: {
     originGroup: {
-      id: afdorigingroup_api.id
+      id: afdorigingroup_redir.id
     }
     customDomains: [
       {
@@ -86,7 +95,63 @@ resource afdroute_api 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = 
       '/*'
     ]
     forwardingProtocol: 'HttpOnly'
-    linkToDefaultDomain: 'Enabled'
+    linkToDefaultDomain: 'Disabled'
+    httpsRedirect: 'Enabled'
+    enabledState: 'Enabled'
+  }
+}
+
+resource afdorigingroup_admin 'Microsoft.Cdn/profiles/origingroups@2021-06-01' = {
+  parent: frontdoor
+  name: 'origingroup-admin'
+  properties: {
+    loadBalancingSettings: {
+      sampleSize: 4
+      successfulSamplesRequired: 3
+      additionalLatencyInMilliseconds: 50
+    }
+    sessionAffinityState: 'Disabled'
+  }
+}
+
+resource afdorigin_admin 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01' = {
+  parent: afdorigingroup_admin
+  name: 'origin-admin'
+  properties: {
+    hostName: containerUrl
+    httpPort: 80
+    httpsPort: 443
+    originHostHeader: adminCustomDomainName
+    priority: 1
+    weight: 1000
+    enabledState: 'Enabled'
+    enforceCertificateNameCheck: false
+  }
+}
+
+resource afdroute_admin 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = {
+  parent: afdendpoint
+  name: 'route-admin'
+  properties: {
+    originGroup: {
+      id: afdorigingroup_admin.id
+    }
+    customDomains: [
+      {
+        id: adminCustomDomain.id
+      }
+    ]
+    ruleSets: []
+    supportedProtocols: [
+      'Https'
+      'Http'
+    ]
+    patternsToMatch: [
+      '/'
+      '/*'
+    ]
+    forwardingProtocol: 'HttpOnly'
+    linkToDefaultDomain: 'Disabled'
     httpsRedirect: 'Enabled'
     enabledState: 'Enabled'
   }

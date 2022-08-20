@@ -4,11 +4,20 @@ param name string
 param resourceGroupName string
 param location string = deployment().location
 param customDomain string
-param containerImage string
+param adminDomain string
+param redirectorContainerImage string
+param adminContainerImage string
 param acrServer string
 param acrUser string
 @secure()
 param acrPassword string
+@secure()
+param adminAuthDomain string
+@secure()
+param adminTenantId string
+@secure()
+param adminClientId string
+
 
 resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: resourceGroupName
@@ -30,7 +39,11 @@ module container './resources/container.bicep' = {
   params: {
     nameprefix: toLower(name)
     location: rg.location
-    image: containerImage
+    redirectorimage: redirectorContainerImage
+    adminimage: adminContainerImage
+    adminClientId: adminClientId
+    adminAuthDomain: adminAuthDomain
+    adminTenantId: adminTenantId
     acrServer: acrServer
     acrUser: acrUser
     acrPassword: acrPassword
@@ -46,7 +59,8 @@ module frontdoor './resources/frontdoor.bicep' = {
   scope: rg
   params: {
     nameprefix: toLower(name)
-    customDomainName: customDomain
+    redirCustomDomainName: customDomain
+    adminCustomDomainName: adminDomain
     containerUrl: container.outputs.containerIPAddress
   }
   dependsOn: [

@@ -41,11 +41,17 @@ jobs:
             username: ${{ secrets.AZURE_ACR_USERNAME }}
             password: ${{ secrets.AZURE_ACR_PASSWORD }}
           
-        - name: Build and Push Image
+        - name: Build and Push Redirector Image
           run: |
             cd app
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
+
+        - name: Build and Push Admin Image
+          run: |
+            cd adminapp
+            docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
+            docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
 
         - name: Deploy Azure Resources
           uses: azure/powershell@v1
@@ -53,12 +59,17 @@ jobs:
             inlineScript: |
               $params = @{
                 customDomain = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}";
+                adminDomain = "${{ secrets.AZUREDEPLOY_ADMIN_DOMAIN }}";
                 name = "${{env.DEPLOYMENT_NAME}}";
-                containerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}";
+                redirectorContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}";
+                adminContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}";
                 acrServer = "${{ secrets.AZURE_ACR_REGISTRY }}";
                 acrUser = "${{ secrets.AZURE_ACR_USERNAME }}";
                 acrPassword = "${{ secrets.AZURE_ACR_PASSWORD }}";
                 resourceGroupName = "${{ secrets.AZUREDEPLOY_RESOURCEGROUP }}";
+                adminClientId = "${{ secrets.AZUREDEPLOY_ADMIN_CLIENTID }}";
+                adminTenantId = "${{ secrets.AZUREDEPLOY_ADMIN_TENANTID }}";
+                adminAuthDomain = "${{ secrets.AZUREDEPLOY_ADMIN_AUTHDOMAIN }}";
               }
 
               New-AzDeployment -Name "${{env.DEPLOYMENT_NAME}}" -TemplateFile "template/main.bicep" -TemplateParameterObject $params -Location ${{env.DEPLOYMENT_REGION}}
