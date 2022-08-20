@@ -39,7 +39,7 @@
         Logger.LogInformation("Processing valid form");
 
         var existingUrl = await RedirectDataService.GetUrlDetails(url.RowKey);
-        if(existingUrl != null)
+        if(existingUrl.Success)
         {
             LastSubmitResult = "URL Short Name already exists - Pick another one";
             StateHasChanged();
