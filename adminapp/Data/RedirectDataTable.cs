@@ -15,12 +15,14 @@ namespace RedirectAdmin.Data
     {
         private readonly TableClient tableClient;
         private readonly ILogger<RedirectDataTable> logger;
+        private readonly string tablePartitionKey;
 
         public RedirectDataTable(TableConfigOptions config, ILogger<RedirectDataTable> logger)
         {
             tableClient = new TableClient(config.ConnectionString, config.TableName);
             tableClient.CreateIfNotExists();
             this.logger = logger;
+            this.tablePartitionKey = config.TablePartitionKey;
             logger.LogInformation("Creating RedirectDataTable");
         }
         public async Task<TableResponse<List<RedirectURL>>> GetAllUrls()
@@ -69,7 +71,7 @@ namespace RedirectAdmin.Data
 
         public async Task<TableResponse> SaveUrl(RedirectURL url)
         {
-            url.PartitionKey = url.RowKey;
+            url.PartitionKey = tablePartitionKey;
             try
             {
                 await tableClient.UpsertEntityAsync<RedirectURL>(url);
