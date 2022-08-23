@@ -24,19 +24,10 @@ jobs:
     build:
         runs-on: ubuntu-latest
         name: 'Build and Push Containers'
+        
         steps:
-        # checkout the repo
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@main
-          
-        - name: Build Azure Function
-          shell: bash
-          run: |
-            echo $(pwd)
-            pushd ./redirectfunction
-            echo $(pwd)
-            dotnet build --configuration Release --output ./output
-            popd
 
         - name: 'Login via Azure CLI'
           uses: azure/login@v1
@@ -115,6 +106,9 @@ jobs:
         needs: [deploy-infra]
 
         steps:
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@main
+          
         - uses: actions/download-artifact@v2
           with:
             name: deploymentOutput
