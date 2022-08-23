@@ -54,10 +54,10 @@ jobs:
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
 
-        - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        - name: Setup Dot Net ${{ env.DOTNET_VERSION }} Environment
           uses: actions/setup-dotnet@v1
           with:
-            dotnet-version: 6.0
+            dotnet-version: '6.0.x'
 
         - name: Build Azure Function
           shell: bash
