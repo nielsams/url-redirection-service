@@ -128,7 +128,7 @@ jobs:
         - name: Build Azure Function
           shell: bash
           run: |
-            pushd './redirectfunction'
+            pushd redirectfunction
             dotnet build --configuration Release --output ./output
             popd
 
