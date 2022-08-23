@@ -71,6 +71,7 @@ jobs:
         name: 'Deploy Infra'
         needs: [build]
 
+        steps:
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@main
           
@@ -116,6 +117,7 @@ jobs:
         name: 'Deploy Azure Function'
         needs: [build, deploy-infra]
 
+        steps:
         - uses: actions/download-artifact@v2
           with:
             name: deploymentOutput
