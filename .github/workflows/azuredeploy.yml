@@ -23,7 +23,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        name: 'Build Projects'
+        name: 'Build and Push Containers'
         steps:
         # checkout the repo
         - name: 'Checkout GitHub Action'
@@ -53,18 +53,6 @@ jobs:
             cd adminapp
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
-
-        - name: Setup dotnet environment
-          uses: actions/setup-dotnet@v1
-          with:
-            dotnet-version: '6.0.x'
-
-        - name: Build Azure Function
-          shell: bash
-          run: |
-            pushd './redirectfunction'
-            dotnet build --configuration Release --output ./output
-            popd
 
     deploy-infra: 
         runs-on: ubuntu-latest
@@ -114,8 +102,8 @@ jobs:
 
     publish-function: 
         runs-on: ubuntu-latest
-        name: 'Deploy Azure Function'
-        needs: [build, deploy-infra]
+        name: 'Build and Deploy Azure Function'
+        needs: [deploy-infra]
 
         steps:
         - uses: actions/download-artifact@v2
@@ -132,9 +120,21 @@ jobs:
               $functionName = $deploymentOutput.function_name.Value
               echo "::set-output name=function_name::$functionName"
 
+        - name: Setup dotnet environment
+          uses: actions/setup-dotnet@v1
+          with:
+            dotnet-version: '6.0.x'
+
+        - name: Build Azure Function
+          shell: bash
+          run: |
+            pushd './redirectfunction'
+            dotnet build --configuration Release --output ./output
+            popd
+
         - name: Deploy Azure Function
           uses: Azure/functions-action@v1
           with:
             app-name: ${{ steps.function-metadata.outputs.function_name }}
-            package: 'redirectfunction'
+            package: './redirectfunction/output'
 
