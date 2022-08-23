@@ -28,7 +28,7 @@ namespace func
                 return new NotFoundResult();
             }
             log.LogInformation("Redirecting " + entity.RowKey + " to " + entity.RedirectUrl);
-            return new OkObjectResult(entity.RedirectUrl);
+            return new RedirectResult(entity.RedirectUrl, false);
         }
     }
 }

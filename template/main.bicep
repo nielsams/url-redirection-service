@@ -54,6 +54,16 @@ module container './resources/container.bicep' = {
   ]
 }
 
+module webapps './resources/webapps.bicep' = {
+  name: '${name}-webapps'
+  scope: rg
+  params: {
+    nameprefix: toLower(name)
+    location: rg.location
+    storageAccountName: storage.outputs.storageAccountName
+  }
+}
+
 module frontdoor './resources/frontdoor.bicep' = {
   name: '${name}-frontdoor'
   scope: rg
@@ -69,4 +79,5 @@ module frontdoor './resources/frontdoor.bicep' = {
 }
 
 output resource_group_name string = rg.name
+output function_name string = webapps.outputs.functionName
 output frontdoor_hostname string = frontdoor.outputs.frontDoorEndpointHostName
