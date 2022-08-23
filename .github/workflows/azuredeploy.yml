@@ -54,7 +54,7 @@ jobs:
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
 
-        - name: Setup Dot Net ${{ env.DOTNET_VERSION }} Environment
+        - name: Setup dotnet environment
           uses: actions/setup-dotnet@v1
           with:
             dotnet-version: '6.0.x'
@@ -102,7 +102,7 @@ jobs:
 
               $deploy = New-AzDeployment -Name "${{env.DEPLOYMENT_NAME}}" -TemplateFile "template/main.bicep" -TemplateParameterObject $params -Location ${{env.DEPLOYMENT_REGION}}
               # Save the outputs from the deployment
-              $outputsJson = $res.Outputs | ConvertTo-Json -Depth 10
+              $outputsJson = $deploy.Outputs | ConvertTo-Json -Depth 10
               $outputsJson | Out-File deploymentOutput.json
             azPSVersion: 'latest'
 

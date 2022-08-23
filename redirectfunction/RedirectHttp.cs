@@ -17,7 +17,7 @@ namespace func
         }
 
         [FunctionName("RedirectHttp")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "RedirectHttp/{url}")] HttpRequest req,
             [Table("redirectionurls", "redirect", "{url}", Connection = "StorageConnection")] Url entity,
             string url,
