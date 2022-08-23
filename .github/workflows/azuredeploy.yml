@@ -29,6 +29,15 @@ jobs:
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@main
           
+        - name: Build Azure Function
+          shell: bash
+          run: |
+            echo $(pwd)
+            pushd ./redirectfunction
+            echo $(pwd)
+            dotnet build --configuration Release --output ./output
+            popd
+
         - name: 'Login via Azure CLI'
           uses: azure/login@v1
           with:
