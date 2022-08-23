@@ -108,7 +108,13 @@ jobs:
         steps:
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@main
-          
+
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+            enable-AzPSSession: true 
+
         - uses: actions/download-artifact@v2
           with:
             name: deploymentOutput
