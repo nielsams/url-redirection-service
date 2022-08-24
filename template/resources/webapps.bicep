@@ -21,6 +21,7 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
     serverFarmId: functionasp.id
     clientAffinityEnabled: true
     siteConfig: {
+      alwaysOn: true
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
