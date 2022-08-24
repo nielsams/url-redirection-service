@@ -5,7 +5,6 @@ param resourceGroupName string
 param location string = deployment().location
 param customDomain string
 param adminDomain string
-param redirectorContainerImage string
 param adminContainerImage string
 param acrServer string
 param acrUser string
@@ -39,7 +38,6 @@ module container './resources/container.bicep' = {
   params: {
     nameprefix: toLower(name)
     location: rg.location
-    redirectorimage: redirectorContainerImage
     adminimage: adminContainerImage
     adminClientId: adminClientId
     adminAuthDomain: adminAuthDomain
@@ -54,6 +52,16 @@ module container './resources/container.bicep' = {
   ]
 }
 
+module webapps './resources/webapps.bicep' = {
+  name: '${name}-webapps'
+  scope: rg
+  params: {
+    nameprefix: toLower(name)
+    location: rg.location
+    storageAccountName: storage.outputs.storageAccountName
+  }
+}
+
 module frontdoor './resources/frontdoor.bicep' = {
   name: '${name}-frontdoor'
   scope: rg
@@ -61,12 +69,15 @@ module frontdoor './resources/frontdoor.bicep' = {
     nameprefix: toLower(name)
     redirCustomDomainName: customDomain
     adminCustomDomainName: adminDomain
-    containerUrl: container.outputs.containerIPAddress
+    redirUrl: webapps.outputs.functionUrl
+    adminUrl: container.outputs.containerIPAddress
   }
   dependsOn: [
     container
+    webapps
   ]
 }
 
 output resource_group_name string = rg.name
+output function_name string = webapps.outputs.functionName
 output frontdoor_hostname string = frontdoor.outputs.frontDoorEndpointHostName

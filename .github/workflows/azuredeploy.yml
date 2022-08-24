@@ -21,13 +21,14 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-    build-and-deploy:
+    build:
         runs-on: ubuntu-latest
+        name: 'Build and Push Containers'
+        
         steps:
-        # checkout the repo
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@main
-          
+
         - name: 'Login via Azure CLI'
           uses: azure/login@v1
           with:
@@ -41,17 +42,26 @@ jobs:
             username: ${{ secrets.AZURE_ACR_USERNAME }}
             password: ${{ secrets.AZURE_ACR_PASSWORD }}
           
-        - name: Build and Push Redirector Image
-          run: |
-            cd app
-            docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
-            docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
-
         - name: Build and Push Admin Image
           run: |
             cd adminapp
             docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
             docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}
+
+    deploy-infra: 
+        runs-on: ubuntu-latest
+        name: 'Deploy Infra'
+        needs: [build]
+
+        steps:
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@main
+          
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+            enable-AzPSSession: true 
 
         - name: Deploy Azure Resources
           uses: azure/powershell@v1
@@ -61,7 +71,6 @@ jobs:
                 customDomain = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}";
                 adminDomain = "${{ secrets.AZUREDEPLOY_ADMIN_DOMAIN }}";
                 name = "${{env.DEPLOYMENT_NAME}}";
-                redirectorContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}";
                 adminContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}";
                 acrServer = "${{ secrets.AZURE_ACR_REGISTRY }}";
                 acrUser = "${{ secrets.AZURE_ACR_USERNAME }}";
@@ -72,6 +81,62 @@ jobs:
                 adminAuthDomain = "${{ secrets.AZUREDEPLOY_ADMIN_AUTHDOMAIN }}";
               }
 
-              New-AzDeployment -Name "${{env.DEPLOYMENT_NAME}}" -TemplateFile "template/main.bicep" -TemplateParameterObject $params -Location ${{env.DEPLOYMENT_REGION}}
-
+              $deploy = New-AzDeployment -Name "${{env.DEPLOYMENT_NAME}}" -TemplateFile "template/main.bicep" -TemplateParameterObject $params -Location ${{env.DEPLOYMENT_REGION}}
+              # Save the outputs from the deployment
+              $outputsJson = $deploy.Outputs | ConvertTo-Json -Depth 10
+              $outputsJson | Out-File deploymentOutput.json
             azPSVersion: 'latest'
+
+        - name: Save deployment output
+          uses: actions/upload-artifact@v2
+          with:
+            name: deploymentOutput
+            path: deploymentOutput.json
+
+    publish-function: 
+        runs-on: ubuntu-latest
+        name: 'Build and Deploy Azure Function'
+        needs: [deploy-infra]
+
+        steps:
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@main
+
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+            enable-AzPSSession: true 
+
+        - uses: actions/download-artifact@v2
+          with:
+            name: deploymentOutput
+
+        - name: 'Get function name from deployment'
+          id: function-metadata
+          uses: azure/powershell@v1
+          with: 
+            azPSVersion: "latest"
+            inlineScript: |
+              $deploymentOutput = Get-Content deploymentOutput.json | ConvertFrom-Json -Depth 10
+              $functionName = $deploymentOutput.function_name.Value
+              echo "::set-output name=function_name::$functionName"
+
+        - name: Setup dotnet environment
+          uses: actions/setup-dotnet@v1
+          with:
+            dotnet-version: '6.0.x'
+
+        - name: Build Azure Function
+          shell: bash
+          run: |
+            pushd redirectfunction
+            dotnet build --configuration Release --output ./output
+            popd
+
+        - name: Deploy Azure Function
+          uses: Azure/functions-action@v1
+          with:
+            app-name: ${{ steps.function-metadata.outputs.function_name }}
+            package: './redirectfunction/output'
+

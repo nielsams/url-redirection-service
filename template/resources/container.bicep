@@ -1,6 +1,5 @@
 param nameprefix string
 param location string = resourceGroup().location
-param redirectorimage string
 param adminimage string
 param storageAccountName string
 param acrServer string
@@ -29,35 +28,6 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
   location: location
   properties: {
     containers: [
-      {
-        name: 'redirector'
-        properties: {
-          image: redirectorimage
-          environmentVariables: [
-            {
-              name: 'STORAGE_TABLE_NAME'
-              value: tableName
-            }
-            {
-              name: 'STORAGE_CONNECTION_STRING'
-              value: storageConnectionString
-            }
-
-          ]
-          ports: [
-            {
-              port: 8080
-              protocol: 'TCP'
-            }
-          ]
-          resources: {
-            requests: {
-              cpu: 1
-              memoryInGB: 2
-            }
-          }
-        }
-      }
       {
         name: 'redirectadmin'
         properties: {
@@ -112,10 +82,6 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
     ipAddress: {
       type: 'Public'
       ports: [
-        {
-          port: 8080
-          protocol: 'TCP'
-        }
         {
           port: 80
           protocol: 'TCP'
