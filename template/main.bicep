@@ -71,10 +71,12 @@ module frontdoor './resources/frontdoor.bicep' = {
     nameprefix: toLower(name)
     redirCustomDomainName: customDomain
     adminCustomDomainName: adminDomain
-    containerUrl: container.outputs.containerIPAddress
+    redirUrl: container.outputs.containerIPAddress
+    adminUrl: webapps.outputs.functionUrl
   }
   dependsOn: [
     container
+    webapps
   ]
 }
 

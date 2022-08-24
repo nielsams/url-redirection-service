@@ -1,8 +1,11 @@
 @description('First part of the resource name')
 param nameprefix string
 
-@description('The base URL of the container, without https://')
-param containerUrl string
+@description('The base URL of the redirector, without https://')
+param redirUrl string
+
+@description('The URL of the admin page, without https://')
+param adminUrl string
 
 param redirCustomDomainName string
 param adminCustomDomainName string
@@ -63,14 +66,15 @@ resource afdorigin_redir 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01
   parent: afdorigingroup_redir
   name: 'origin-redir'
   properties: {
-    hostName: containerUrl
+    hostName: redirUrl
     httpPort: 8080
     httpsPort: 443
-    originHostHeader: containerUrl
+    originHostHeader: redirUrl
     priority: 1
     weight: 1000
     enabledState: 'Enabled'
     enforceCertificateNameCheck: false
+    
   }
 }
 
@@ -81,6 +85,7 @@ resource afdroute_api 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = 
     originGroup: {
       id: afdorigingroup_redir.id
     }
+    originPath: '/api/RedirectHttp'
     customDomains: [
       {
         id: customDomain.id
@@ -118,7 +123,7 @@ resource afdorigin_admin 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01
   parent: afdorigingroup_admin
   name: 'origin-admin'
   properties: {
-    hostName: containerUrl
+    hostName: adminUrl
     httpPort: 80
     httpsPort: 443
     originHostHeader: adminCustomDomainName
