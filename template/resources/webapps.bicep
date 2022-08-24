@@ -13,7 +13,7 @@ resource datastorage 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
 var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${datastorage.name};AccountKey=${datastorage.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
 
 resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
-  name: '${nameprefix}redirfunc'
+  name: '${nameprefix}func'
   location: location
   kind: 'functionapp'
   properties: {
