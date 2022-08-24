@@ -67,7 +67,7 @@ resource afdorigin_redir 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01
   name: 'origin-redir'
   properties: {
     hostName: redirUrl
-    httpPort: 8080
+    httpPort: 80
     httpsPort: 443
     originHostHeader: redirUrl
     priority: 1
@@ -99,7 +99,7 @@ resource afdroute_api 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = 
     patternsToMatch: [
       '/*'
     ]
-    forwardingProtocol: 'HttpOnly'
+    forwardingProtocol: 'HttpsOnly'
     linkToDefaultDomain: 'Disabled'
     httpsRedirect: 'Enabled'
     enabledState: 'Enabled'
