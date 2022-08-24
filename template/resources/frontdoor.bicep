@@ -73,12 +73,11 @@ resource afdorigin_redir 'Microsoft.Cdn/profiles/origingroups/origins@2021-06-01
     priority: 1
     weight: 1000
     enabledState: 'Enabled'
-    enforceCertificateNameCheck: false
-    
+    enforceCertificateNameCheck: false    
   }
 }
 
-resource afdroute_api 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = {
+resource afdroute_redir 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' = {
   parent: afdendpoint
   name: 'route-redir'
   properties: {
