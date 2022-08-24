@@ -5,7 +5,6 @@ param resourceGroupName string
 param location string = deployment().location
 param customDomain string
 param adminDomain string
-param redirectorContainerImage string
 param adminContainerImage string
 param acrServer string
 param acrUser string
@@ -39,7 +38,6 @@ module container './resources/container.bicep' = {
   params: {
     nameprefix: toLower(name)
     location: rg.location
-    redirectorimage: redirectorContainerImage
     adminimage: adminContainerImage
     adminClientId: adminClientId
     adminAuthDomain: adminAuthDomain

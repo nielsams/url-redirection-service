@@ -42,12 +42,6 @@ jobs:
             username: ${{ secrets.AZURE_ACR_USERNAME }}
             password: ${{ secrets.AZURE_ACR_PASSWORD }}
           
-        - name: Build and Push Redirector Image
-          run: |
-            cd app
-            docker build . -t ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
-            docker push ${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}
-
         - name: Build and Push Admin Image
           run: |
             cd adminapp
@@ -77,7 +71,6 @@ jobs:
                 customDomain = "${{ secrets.AZUREDEPLOY_CUSTOM_DOMAIN }}";
                 adminDomain = "${{ secrets.AZUREDEPLOY_ADMIN_DOMAIN }}";
                 name = "${{env.DEPLOYMENT_NAME}}";
-                redirectorContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirector:${{ github.sha }}";
                 adminContainerImage = "${{ secrets.AZURE_ACR_REGISTRY }}/redirectadmin:${{ github.sha }}";
                 acrServer = "${{ secrets.AZURE_ACR_REGISTRY }}";
                 acrUser = "${{ secrets.AZURE_ACR_USERNAME }}";
