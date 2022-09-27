@@ -24,6 +24,7 @@ resource datastorage 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
 
 var tableName = 'redirectionurls'
 var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${datastorage.name};AccountKey=${datastorage.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
+var linuxFxVersion = 'DOCKER|${adminContainerImage}'
 
 resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
   name: '${nameprefix}func'
@@ -64,13 +65,13 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
 resource adminApp 'Microsoft.Web/sites@2020-06-01' = {
   name: '${nameprefix}adminapp'
   location: location
-  kind: 'app,linux,container'
+  kind: 'linux,container'
   properties: {
     httpsOnly: true
     serverFarmId: adminappasp.id
     clientAffinityEnabled: true
     siteConfig: {
-      linuxFxVersion: 'DOCKER|${adminContainerImage}'
+      linuxFxVersion: linuxFxVersion
       alwaysOn: true
       appSettings: [
         {
