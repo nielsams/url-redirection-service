@@ -64,11 +64,13 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
 resource adminApp 'Microsoft.Web/sites@2020-06-01' = {
   name: '${nameprefix}adminapp'
   location: location
+  kind: 'app,linux,container'
   properties: {
     httpsOnly: true
     serverFarmId: appasp.id
     clientAffinityEnabled: true
     siteConfig: {
+      linuxFxVersion: 'DOCKER|${adminContainerImage}'
       alwaysOn: true
       appSettings: [
         {
@@ -108,7 +110,6 @@ resource adminApp 'Microsoft.Web/sites@2020-06-01' = {
           value: acrPassword
         }
       ]
-      linuxFxVersion: 'DOCKER|${adminContainerImage}'
     }
   }
 }
