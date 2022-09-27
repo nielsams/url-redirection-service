@@ -108,7 +108,7 @@ resource adminApp 'Microsoft.Web/sites@2020-06-01' = {
           value: acrPassword
         }
       ]
-      linuxFxVersion: 'DOCKER|${acrServer}/${adminContainerImage}'
+      linuxFxVersion: 'DOCKER|${adminContainerImage}'
     }
   }
 }
