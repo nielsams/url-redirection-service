@@ -31,7 +31,7 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
   kind: 'functionapp'
   properties: {
     httpsOnly: true
-    serverFarmId: appasp.id
+    serverFarmId: functionappasp.id
     clientAffinityEnabled: true
     siteConfig: {
       alwaysOn: true
@@ -67,7 +67,7 @@ resource adminApp 'Microsoft.Web/sites@2020-06-01' = {
   kind: 'app,linux,container'
   properties: {
     httpsOnly: true
-    serverFarmId: appasp.id
+    serverFarmId: adminappasp.id
     clientAffinityEnabled: true
     siteConfig: {
       linuxFxVersion: 'DOCKER|${adminContainerImage}'
@@ -114,7 +114,16 @@ resource adminApp 'Microsoft.Web/sites@2020-06-01' = {
   }
 }
 
-resource appasp 'Microsoft.Web/serverfarms@2021-03-01' = {
+resource functionappasp 'Microsoft.Web/serverfarms@2021-03-01' = {
+  name: '${nameprefix}asp'
+  location: location
+  sku: {
+    name: 'B1'
+    tier: 'Basic'
+  }
+}
+
+resource adminappasp 'Microsoft.Web/serverfarms@2021-03-01' = {
   name: '${nameprefix}asp'
   location: location
   sku: {
