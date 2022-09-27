@@ -115,7 +115,7 @@ resource adminApp 'Microsoft.Web/sites@2020-06-01' = {
 }
 
 resource functionappasp 'Microsoft.Web/serverfarms@2021-03-01' = {
-  name: '${nameprefix}asp'
+  name: '${nameprefix}funcasp'
   location: location
   sku: {
     name: 'B1'
@@ -124,7 +124,7 @@ resource functionappasp 'Microsoft.Web/serverfarms@2021-03-01' = {
 }
 
 resource adminappasp 'Microsoft.Web/serverfarms@2021-03-01' = {
-  name: '${nameprefix}asp'
+  name: '${nameprefix}admasp'
   location: location
   sku: {
     name: 'B1'
