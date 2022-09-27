@@ -3,13 +3,26 @@ param nameprefix string
 
 @description('Azure region for resources')
 param location string = resourceGroup().location
-
 param storageAccountName string
+
+param adminContainerImage string
+param acrServer string
+param acrUser string
+@secure()
+param acrPassword string
+
+@secure()
+param adminTenantId string
+@secure()
+param adminClientId string
+@secure()
+param adminAuthDomain string
 
 resource datastorage 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
   name: storageAccountName
 }
 
+var tableName = 'redirectionurls'
 var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${datastorage.name};AccountKey=${datastorage.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
 
 resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
@@ -18,7 +31,7 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
   kind: 'functionapp'
   properties: {
     httpsOnly: true
-    serverFarmId: functionasp.id
+    serverFarmId: appasp.id
     clientAffinityEnabled: true
     siteConfig: {
       alwaysOn: true
@@ -48,7 +61,59 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
   }
 }
 
-resource functionasp 'Microsoft.Web/serverfarms@2021-03-01' = {
+resource adminApp 'Microsoft.Web/sites@2020-06-01' = {
+  name: '${nameprefix}adminapp'
+  location: location
+  properties: {
+    httpsOnly: true
+    serverFarmId: appasp.id
+    clientAffinityEnabled: true
+    siteConfig: {
+      alwaysOn: true
+      appSettings: [
+        {
+          name: 'RedirectTable__TableName'
+          value: tableName
+        }
+        {
+          name: 'RedirectTable__ConnectionString'
+          value: storageConnectionString
+        }
+        {
+          name: 'AzureAd__Domain'
+          value: adminAuthDomain
+        }
+        {
+          name: 'AzureAd__TenantId'
+          value: adminTenantId
+        }
+        {
+          name: 'AzureAd__ClientId'
+          value: adminClientId
+        }
+        {
+          name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
+          value: 'false'
+        }
+        {
+          name: 'DOCKER_REGISTRY_SERVER_URL'
+          value: 'https://${acrServer}'
+        }
+        {
+          name: 'DOCKER_REGISTRY_SERVER_USERNAME'
+          value: acrUser
+        }
+        {
+          name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
+          value: acrPassword
+        }
+      ]
+      linuxFxVersion: 'DOCKER|${acrServer}/${adminContainerImage}'
+    }
+  }
+}
+
+resource appasp 'Microsoft.Web/serverfarms@2021-03-01' = {
   name: '${nameprefix}asp'
   location: location
   sku: {
@@ -73,3 +138,4 @@ resource functionstorage 'Microsoft.Storage/storageAccounts@2021-08-01' = {
 
 output functionUrl string = '${functionApp.name}.azurewebsites.net'
 output functionName string = functionApp.name
+output adminUrl string = '${adminApp.name}.azurewebsites.net'
