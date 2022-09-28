@@ -23,7 +23,7 @@ var tableName = 'redirectionurls'
 var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${datastorage.name};AccountKey=${datastorage.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
 
 resource adminContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
-  name: '${nameprefix}rediradm'
+  name: '${nameprefix}admin'
   location: location
   properties: {
     managedEnvironmentId: containerEnv.id
