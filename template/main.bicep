@@ -59,13 +59,6 @@ module webapps './resources/webapps.bicep' = {
     nameprefix: toLower(name)
     location: rg.location
     storageAccountName: storage.outputs.storageAccountName
-    acrServer: acrServer
-    acrUser: acrUser
-    acrPassword: acrPassword
-    adminContainerImage: adminContainerImage
-    adminClientId: adminClientId
-    adminAuthDomain: adminAuthDomain
-    adminTenantId: adminTenantId
   }
   dependsOn: [
     storage
@@ -80,7 +73,7 @@ module frontdoor './resources/frontdoor.bicep' = {
     redirCustomDomainName: customDomain
     adminCustomDomainName: adminDomain
     redirUrl: webapps.outputs.functionUrl
-    adminUrl: webapps.outputs.adminUrl
+    adminUrl: container.outputs.containerUrl
   }
   dependsOn: [
     container
