@@ -154,7 +154,7 @@ resource afdroute_admin 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' 
       '/'
       '/*'
     ]
-    forwardingProtocol: 'HttpOnly'
+    forwardingProtocol: 'HttpsOnly'
     linkToDefaultDomain: 'Disabled'
     httpsRedirect: 'Enabled'
     enabledState: 'Enabled'
