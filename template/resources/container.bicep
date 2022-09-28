@@ -22,76 +22,72 @@ resource datastorage 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
 var tableName = 'redirectionurls'
 var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${datastorage.name};AccountKey=${datastorage.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
 
-// resource adminContainerApp 'Microsoft.Web/containerApps@2021-03-01' = {
-//   name: 'redirectadmin'
-//   location: location
-//   kind: 'containerapp'
-//   properties: {
-//     kubeEnvironmentId: containerEnv.id
-//     configuration: {
-//       secrets: [
-//         {
-//           name: 'container-registry-password'
-//           value: acrPassword
-//         }
-//       ]      
-//       registries: [
-//         {
-//           server: acrServer
-//           username: acrUser
-//           passwordSecretRef: 'container-registry-password'
-//         }
-//       ]
-//       ingress: {
-//         external: true
-//         targetPort: 80
-//       }
-//     }
-//     template: {
-//       containers: [
-//         {
-//           image: adminimage
-//           name: 'webappContainer'
-//           env: [
-//             {
-//               name: 'RedirectTable__TableName'
-//               value: tableName
-//             }
-//             {
-//               name: 'RedirectTable__ConnectionString'
-//               value: storageConnectionString
-//             }
-//             {
-//               name: 'AzureAd__Domain'
-//               value: adminAuthDomain
-//             }
-//             {
-//               name: 'AzureAd__TenantId'
-//               value: adminTenantId
-//             }
-//             {
-//               name: 'AzureAd__ClientId'
-//               value: adminClientId
-//             }
-//           ]
-//         }
-//       ]
-//       scale: {
-//         minReplicas: 1
-//         maxReplicas: 1
-//       }
-//     }
-//   }
-// }
+resource adminContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
+  name: 'redirectadmin'
+  location: location
+  properties: {
+    managedEnvironmentId: containerEnv.id
+    configuration: {
+      secrets: [
+        {
+          name: 'container-registry-password'
+          value: acrPassword
+        }
+      ]      
+      registries: [
+        {
+          server: acrServer
+          username: acrUser
+          passwordSecretRef: 'container-registry-password'
+        }
+      ]
+      ingress: {
+        external: true
+        targetPort: 80
+      }
+    }
+    template: {
+      containers: [
+        {
+          image: adminimage
+          name: 'webappContainer'
+          env: [
+            {
+              name: 'RedirectTable__TableName'
+              value: tableName
+            }
+            {
+              name: 'RedirectTable__ConnectionString'
+              value: storageConnectionString
+            }
+            {
+              name: 'AzureAd__Domain'
+              value: adminAuthDomain
+            }
+            {
+              name: 'AzureAd__TenantId'
+              value: adminTenantId
+            }
+            {
+              name: 'AzureAd__ClientId'
+              value: adminClientId
+            }
+          ]
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 1
+      }
+    }
+  }
+}
 
 
-resource containerEnv 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
+resource containerEnv 'Microsoft.App/managedEnvironments@2022-03-01' = {
   name: '${nameprefix}containerenv'
   location: location
   properties: {
-    // not recognized but type is required
-    type: 'managed'
-    internalLoadBalancerEnabled:false
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
